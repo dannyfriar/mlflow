@@ -59,7 +59,7 @@ _MODEL_DATA_FILE_NAME = "model.yaml"
 _MODEL_DATA_KEY = "model_data"
 _AGENT_PRIMITIVES_FILE_NAME = "agent_primitive_args.json"
 _AGENT_PRIMITIVES_DATA_KEY = "agent_primitive_data"
-_AGENT_DATA_FILE_NAME = "agent.yaml"
+_AGENT_DATA_FILE_NAME = "agent.json"
 _AGENT_DATA_KEY = "agent_data"
 _TOOLS_DATA_FILE_NAME = "tools.pkl"
 _TOOLS_DATA_KEY = "tools_data"
@@ -351,6 +351,15 @@ def _save_model(model, path):
         if model.agent:
             agent_data_path = os.path.join(path, _AGENT_DATA_FILE_NAME)
             model.save_agent(agent_data_path)
+            with open(agent_data_path, "r") as agent_config_file:
+                agent_data = json.load(agent_config_file)
+
+            if "output_parser" in agent_data:
+                del agent_data["output_parser"]
+
+            print("agent_data", agent_data)
+            with open(agent_data_path, "w") as data_file:
+                json.dump(agent_data, data_file)
             model_data_kwargs[_AGENT_DATA_KEY] = _AGENT_DATA_FILE_NAME
 
         if model.tools:
